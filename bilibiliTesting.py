@@ -10,15 +10,15 @@ headers = {
    }
 
 def getAid(BVid):
-    url = "http://api.bilibili.com/x/web-interface/view?bvid="+str(BVid)
+    url = f"http://api.bilibili.com/x/web-interface/view?bvid={BVid}"
     response = requests.get(url, headers=headers).json()
     AVID = response['data']['aid']
     return AVID
 
 
 def getReplyPageNum(oid):
-    url = "https://api.bilibili.com/x/v2/reply?&jsonp=jsonp&pn=1" + \
-        "&type=1&oid="+str(oid)+"&sort=2"
+    url = f"https://api.bilibili.com/x/v2/reply?&jsonp=jsonp&pn=1" + \
+        "&type=1&oid={str(oid)}&sort=2"
     respond = requests.get(url, headers=headers).json()
     replyNum = int(respond['data']['page']['acount'])
     replyPageCount = int(respond['data']['page']['count'])
