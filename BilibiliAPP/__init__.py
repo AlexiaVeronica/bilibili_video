@@ -5,10 +5,8 @@ import re
 
 def input_bili_id(bili_id: str) -> dict:
     bili_id = re.findall(r'video/(.*?)/?', bili_id)[0] if 'http' in bili_id else bili_id
-    if re.findall(bili_id, "av") != -1:
-        return UrlConstant.AID_INFO_API.format(
-            Transformation().AV(re.sub(r"av", "", bili_id))
-        )
+    if re.findall(bili_id, "av") != -1 or bili_id.isdigit() is True:
+        return UrlConstant.AID_INFO_API.format(re.sub(r"av", "", bili_id))
     if re.findall(bili_id, "BV") != -1:
         return UrlConstant.AID_INFO_API.format(Transformation().AV(bili_id))
 
