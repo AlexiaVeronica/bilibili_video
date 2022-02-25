@@ -14,7 +14,6 @@ def input_bili_id(bili_id: str) -> dict:
 
 
 def video_download_id(bilibili_id: str, max_retry=10):
-    print(input_bili_id(bilibili_id))
     for index, retry in enumerate(range(max_retry)):
         response = HttpUtil.get(input_bili_id(bilibili_id)).json()
         if response.get("code") == 0:
@@ -23,44 +22,36 @@ def video_download_id(bilibili_id: str, max_retry=10):
             title = response.get("data")['title']
             cid = response.get("data")['cid']
             return get_video_url(bv_id, cid, "112", title)
-        else:
-            print(f"retry：{index}\t", response.get("message"))
+        print(f"retry：{index}\t", response.get("message"))
 
 
 def get_video_url(bid, cid, qn, title) -> str:
-    params = {
-        'bvid': bid, 'qn': qn, 'cid': cid,
-        'fnval': '0', 'fnver': '0', 'fourk': '1',
-    }
-    api_url = "https://api.bilibili.com/x/player/playurl"
     for index, retry in enumerate(range(10)):
-        response = HttpUtil.get(api_url, params=params).json()
+        params = {
+            'bvid': bid, 'qn': qn, 'cid': cid,
+            'fnval': '0', 'fnver': '0', 'fourk': '1',
+        }
+        response = HttpUtil.get(UrlConstant.VIDEO_API, params=params).json()
         if response.get("code") == 0:
             video_url = [durl['url'] for durl in response.get("data")['durl']]
             return video_url[0], title
-        else:
-            print(f"retry：{index}\t", response.get("message"))
+        print(f"retry：{index}\t", response.get("message"))
 
 
 class Transformation:
-    def __init__(self):
-        self.key = 'fZodR9XQDSUm21yCkr6zBqiveYah8bt4xsWpHnJE7jL5VG3guMTKNPAwcF'
-        self.s = [11, 10, 3, 8, 4, 6]
+    @staticmethod
+    def AV(bv_id: str):
+        key = 'fZodR9XQDSUm21yCkr6zBqiveYah8bt4xsWpHnJE7jL5VG3guMTKNPAwcF'
+        result = sum([{key[i]: i for i in range(58)}[bv_id[[11, 10, 3, 8, 4, 6][i]]] * 58 ** i for i in range(6)])
+        return (result - 8728348608) ^ 177451812
 
-    def AV(self, bv_id: str):
-        tr = {}
-        for i in range(58):
-            tr[self.key[i]] = i
-        r = 0
-        for i in range(6):
-            r += tr[bv_id[self.s[i]]] * 58 ** i
-        return (r - 8728348608) ^ 177451812
-
-    def BV(self, av_id: int):
+    @staticmethod
+    def BV(av_id: int):
+        key = 'fZodR9XQDSUm21yCkr6zBqiveYah8bt4xsWpHnJE7jL5VG3guMTKNPAwcF'
         x = (av_id ^ 177451812) + 8728348608
         r = list('BV1  4 1 7  ')
         for i in range(6):
-            r[self.s[i]] = self.key[x // 58 ** i % 58]
+            r[[11, 10, 3, 8, 4, 6][i]] = key[x // 58 ** i % 58]
         return ''.join(r)
 
     # print(AV('BV17x411w7KC'))
