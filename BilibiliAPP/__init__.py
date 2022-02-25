@@ -1,6 +1,5 @@
 from BilibiliAPP import HttpUtil, UrlConstant
-from rich import print
-import re
+from instance import *
 
 
 def input_bili_id(bili_id: str) -> dict:
@@ -32,7 +31,7 @@ def get_video_url(bid, cid, qn, title) -> str:
         response = HttpUtil.get(UrlConstant.VIDEO_API, params=params).json()
         if response.get("code") == 0:
             video_url = [durl['url'] for durl in response.get("data")['durl']]
-            return video_url[0], title
+            return video_url[0], re_book_name(title)
         print(f"retry：{index}\t", response.get("message"))
 
 

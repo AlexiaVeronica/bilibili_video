@@ -7,7 +7,6 @@ class Vars:
     cfg = Config('Settings - Config.json', os.getcwd())
 
 
-
 def str_mid(string: str, left: str, right: str, start=None, end=None):
     pos1 = string.find(left, start, end)
     if pos1 > -1:
@@ -27,7 +26,6 @@ def isCN(info):
 
 def re_book_name(novel_name: str):
     return re.sub(r'[？?*|“<>:/]', '', novel_name)
-
 
 
 def input_(prompt, default=None):

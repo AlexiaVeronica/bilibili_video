@@ -2,9 +2,11 @@ import BilibiliAPP
 from instance import *
 
 def shell_downlaod_video(inputs):
+    start = time.time()  # 下载开始时间
     if len(inputs) >= 2:
         video_url, title = BilibiliAPP.video_download_id(str(inputs[1]))
         BilibiliAPP.HttpUtil.download(video_url, title)
+        print('Download completed!,times: %.2f秒' % (time.time() - start))  # 输出下载用时时间
     else:
         print("没有输入bilibiliId")
 
