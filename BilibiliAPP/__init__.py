@@ -38,6 +38,3 @@ class Transformation:
         for i in range(6):
             r[[11, 10, 3, 8, 4, 6][i]] = key[x // 58 ** i % 58]
         return ''.join(r)
-
-    # print(AV('BV17x411w7KC'))
-    # print(BV(722602127))
