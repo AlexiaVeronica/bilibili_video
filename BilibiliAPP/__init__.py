@@ -1,6 +1,5 @@
 from BilibiliAPP import HttpUtil, UrlConstant
 from instance import *
-import video
 
 
 class View:
@@ -13,28 +12,15 @@ class View:
             return UrlConstant.AID_INFO_API.format(Transformation().AV(bili_id))
 
     @staticmethod
-    def web_interface_view(api_url: str, max_retry: int = 5) -> dict:
+    def web_interface_view(api_url: str) -> dict:
         web_interface_view_url = View.input_bili_id(api_url)
-        for retry in range(max_retry):
+        if web_interface_view_url != "":
             return HttpUtil.get(web_interface_view_url).json()
-        else:
-            print("web_interface_view:", Vars.video_info.get("message"))
 
     @staticmethod
-    def play_url_by_cid(bid, cid, qn, max_retry: int = 5) -> dict:
-        # get video play video url
-        for index in range(max_retry):
-            params = {'bvid': bid, 'qn': qn, 'cid': cid, 'fnval': '0', 'fnver': '0', 'fourk': '1'}
-            return HttpUtil.get(UrlConstant.VIDEO_API, params=params).json()
-        else:
-            print("play_url_by_cid:", Vars.video_info.get("message"))
-
-
-def get_video_url(bid, cid, qn, title) -> [str, str]:
-    response = View.play_url_by_cid(bid, cid, qn)
-    if response.get("code") == 0:
-        video_url = [durl['url'] for durl in response.get("data")['durl']]
-        return video_url[0], re_book_name(title)
+    def play_url_by_cid(bid: str, cid: str, qn: str) -> dict:  # get video play video url
+        params = {'bvid': bid, 'qn': qn, 'cid': cid, 'fnval': '0', 'fnver': '0', 'fourk': '1'}
+        return HttpUtil.get(UrlConstant.VIDEO_API, params=params).json()
 
 
 class Transformation:

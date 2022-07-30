@@ -28,8 +28,6 @@ def download(url, params=None):
     end = time.time()  # 下载结束时间
     print('Download completed!,times: %.2f秒' % (end - start))  # 输出下载用时时间
 
-
-BilibiliAPP.get_video_url()
 if __name__ == '__main__':
     Transformation = BilibiliAPP.Transformation()
     print(Transformation.AV("BV11D4y1c7nP"))
