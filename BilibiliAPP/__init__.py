@@ -2,15 +2,16 @@ from BilibiliAPP import HttpUtil, UrlConstant
 from instance import *
 
 
-def input_bili_id(bili_id: str) -> dict:
-    bili_id = re.findall(r'video/(.*?)/?', bili_id)[0] if 'http' in bili_id else bili_id
-    if re.findall(bili_id, "av") != -1 or bili_id.isdigit() is True:
+def input_bili_id(bili_id: str) -> str:
+    bili_id = re.findall("video/(\\w+)/?", bili_id)[0] if 'http' in bili_id else bili_id
+    if bili_id.find('av') != -1 or bili_id.isdigit() is True:
         return UrlConstant.AID_INFO_API.format(re.sub(r"av", "", bili_id))
-    if re.findall(bili_id, "BV") != -1:
+    elif bili_id.find("BV") != -1:
         return UrlConstant.AID_INFO_API.format(Transformation().AV(bili_id))
 
 
-def video_download_id(bilibili_id: str, max_retry=10):
+def video_download_id(bilibili_id: str, max_retry=5):
+    print("video_download_id", input_bili_id(bilibili_id))
     for index, retry in enumerate(range(max_retry)):
         response = HttpUtil.get(input_bili_id(bilibili_id)).json()
         if response.get("code") == 0:
@@ -22,7 +23,7 @@ def video_download_id(bilibili_id: str, max_retry=10):
         print(f"retry：{index}\t", response.get("message"))
 
 
-def get_video_url(bid, cid, qn, title) -> str:
+def get_video_url(bid, cid, qn, title) -> [str, str]:
     for index, retry in enumerate(range(10)):
         params = {
             'bvid': bid, 'qn': qn, 'cid': cid,

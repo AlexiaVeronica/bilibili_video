@@ -13,14 +13,14 @@ def headers():
     }
 
 
-def progress(data: str, title: str, size: int, content_size: int):
+def progress(data: [str], title: str, size: int, content_size: int):
     bar = '%s%.2f%%' % ("■" * int(size * 50 / content_size), float(size / content_size * 100))
     print('[下载进度]:', bar, end='\r')
     with open(f"{title}.flv", 'ab+') as file:  # 显示进度条
         file.write(data)
 
 
-def download(url: str, title: str, max_retry=10, params=None):
+def download(url: str, title: str, params=None):
     response = requests.get(url, headers=headers(), params=params, stream=True)  # stream=True必须写上
     size = 0  # 初始化已下载大小
     content_size = int(response.headers['content-length'])  # 下载文件总大小
