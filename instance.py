@@ -5,6 +5,7 @@ from rich import print
 
 class Vars:
     cfg = Config('Settings - Config.json', os.getcwd())
+    video_info = None
 
 
 def str_mid(string: str, left: str, right: str, start=None, end=None):

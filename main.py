@@ -1,18 +1,27 @@
 import argparse
 import BilibiliAPP
+import video
 from instance import *
 
 
-def shell_download_video(inputs):
+def shell_download_video(inputs_url: str):
     start = time.time()  # 下载开始时间
-    if len(inputs) >= 2:
-        print("inputs:", inputs)
-        video_url, title = BilibiliAPP.video_download_id(str(inputs))
-        print(f"{title}, {video_url}")
-        BilibiliAPP.HttpUtil.download(video_url, title)
-        print('Download completed!,times: %.2f秒' % (time.time() - start))  # 输出下载用时时间
+    Vars.video_info = BilibiliAPP.View.web_interface_view(api_url=inputs_url)
+    if isinstance(Vars.video_info, dict) and Vars.video_info.get("code") == 0:
+        Vars.video_info = video.Video(Vars.video_info.get("data"))
+        response = BilibiliAPP.View.play_url_by_cid(
+            qn="112", bid=Vars.video_info.video_bv_id, cid=Vars.video_info.video_cid
+        )
+        if response.get("code") == 0:
+            video_url = [durl['url'] for durl in response.get("data")['durl']][0]
+            video_title = re.sub(r'[？?*|“<>:/]', '', Vars.video_info.video_title)
+            BilibiliAPP.HttpUtil.download(url=video_url, title=video_title)
+        else:
+            print("download_video:", response.get("message"))
+
+        print('Download completed!, time: %.2f 秒' % (time.time() - start))  # output download time
     else:
-        print("没有输入bilibiliId")
+        print("you input is not a valid bilibili video url")
 
 
 def start_parser():  # start parser for command line arguments and start download process
