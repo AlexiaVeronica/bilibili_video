@@ -1,7 +1,4 @@
 import requests
-from fake_useragent import UserAgent
-from rich import print
-
 from instance import *
 
 

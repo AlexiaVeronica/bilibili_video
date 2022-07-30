@@ -1,5 +1,4 @@
-# coding=utf-8
-import re
+# coding=utf-8 
 from rich import print
 import os
 import json
@@ -22,7 +21,7 @@ class Config:
         except FileNotFoundError:
             try:
                 if not os.path.isdir(self.dir_path):
-                    os.makedirs(self.dir_path)
+                    os.make_dirs(self.dir_path)
                 with open(self.file_path, 'w'):
                     pass
             except Exception as e:
@@ -35,7 +34,7 @@ class Config:
     def save(self):
         try:
             if not os.path.isdir(self.dir_path):
-                os.makedirs(self.dir_path)
+                os.make_dirs(self.dir_path)
             with open(self.file_path, 'w', encoding='utf-8') as f:
                 json.dump(self.data, f, indent=4, ensure_ascii=False)
         except Exception as e:
@@ -57,18 +56,6 @@ def str_mid(string: str, left: str, right: str, start=None, end=None):
     return ''
 
 
-def isCN(info):
-    cn_no = 0
-    for ch in str(info):
-        if '\u4e00' <= ch <= '\u9fff':
-            cn_no += 1
-    return 20 - cn_no
-
-
-def re_book_name(novel_name: str):
-    return re.sub(r'[？?*|“<>:/]', '', novel_name)
-
-
 def input_(prompt, default=None):
     while True:
         ret = input(prompt)
@@ -78,38 +65,11 @@ def input_(prompt, default=None):
             return default
 
 
-class obj(object):
-    def __init__(self, d):
-        for a, b in d.items():
-            if isinstance(b, (list, tuple)):
-                setattr(self, a, [obj(x) if isinstance(
-                    x, dict) else x for x in b])
-            else:
-                setattr(self, a, obj(b) if isinstance(b, dict) else b)
-
-
-def write(path: str, mode: str, info=None):
-    if info is not None:
-        try:
-            with open(path, f'{mode}', encoding='UTF-8', newline='') as file:
-                file.writelines(info)
-        except (UnicodeEncodeError, UnicodeDecodeError) as e:
-            print(e)
-            with open(path, f'{mode}', encoding='gbk', newline='') as file:
-                file.writelines(info)
-    else:
-        try:
-            return open(path, f'{mode}', encoding='UTF-8')
-        except (UnicodeEncodeError, UnicodeDecodeError) as error:
-            print(error)
-            return open(path, f'{mode}', encoding='gbk')
-
-
 def mkdir(path: str):
     if not os.path.exists(path):
         os.mkdir(path)
 
 
-def makedirs(path: str):
+def make_dirs(path: str):
     if not os.path.exists(path):
         os.makedirs(path)
