@@ -7,7 +7,7 @@ from instance import *
 
 
 def shell_download_video(inputs_url: str):
-    start = time.time()  # 下载开始时间
+    start = time.time()  # 下载开始时间 用于计算下载时间
     Vars.video_info = BilibiliAPP.View.web_interface_view(api_url=inputs_url)
     if isinstance(Vars.video_info, dict) and Vars.video_info.get("code") == 0:
         Vars.video_info = video.Video(Vars.video_info.get("data"))
