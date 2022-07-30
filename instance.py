@@ -21,7 +21,7 @@ class Config:
         except FileNotFoundError:
             try:
                 if not os.path.isdir(self.dir_path):
-                    os.make_dirs(self.dir_path)
+                    os.makedirs(self.dir_path)
                 with open(self.file_path, 'w'):
                     pass
             except Exception as e:
@@ -34,7 +34,7 @@ class Config:
     def save(self):
         try:
             if not os.path.isdir(self.dir_path):
-                os.make_dirs(self.dir_path)
+                os.makedirs(self.dir_path)
             with open(self.file_path, 'w', encoding='utf-8') as f:
                 json.dump(self.data, f, indent=4, ensure_ascii=False)
         except Exception as e:

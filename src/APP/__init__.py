@@ -1,5 +1,5 @@
 import re
-from src.BilibiliAPP import HttpUtil, UrlConstant
+from src.APP import HttpUtil, UrlConstant
 from instance import *
 
 

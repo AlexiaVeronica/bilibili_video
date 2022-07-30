@@ -33,6 +33,10 @@ def start_parser():  # start parser for command line arguments and start downloa
         "-d", "--download",
         nargs=1, default=None, help="input image id to download it"
     )  # add download argument to parser object for command line arguments for download image
+    parser.add_argument(
+        "-c", "--cookies",
+        nargs=1, default=None, help="input cookies to download it"
+    )
     argparse_args = parser.parse_args()
     if argparse_args.download is not None:
         shell_download_video(argparse_args.download[0])
