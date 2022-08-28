@@ -1,5 +1,6 @@
 import requests
 from instance import *
+from tenacity import *
 
 
 def headers():
@@ -29,25 +30,12 @@ def download(url: str, title: str, params: dict = None):
         progress(data, title, size, content_size)
 
 
-def get(url: str, params=None, max_retry=10, *args, **kwargs):
-    for retry in range(max_retry):
-        result = requests.get(url=url, headers=headers(), params=params, *args, **kwargs)
-        if result.status_code == 200:
-            return result
-        print("{}请求失败，第{}次重新请求：".format(url, retry))
-
-
-def post(url, data=None, *args, **kwargs):
-    for retry in range(int(Vars.cfg.data("headers", "retry"))):
-        result = requests.post(url=url, headers=headers(), data=data, *args, **kwargs)
-        if result.status_code == 200:
-            return result
-        print("{}请求失败，第{}次重新请求：".format(url, retry))
-
-
-def put(url, data=None, *args, **kwargs):
-    for retry in range(int(Vars.cfg.data("headers", "retry"))):
-        result = requests.put(url=url, headers=headers(), data=data, *args, **kwargs)
-        if result.status_code == 200:
-            return result
-        print("{}请求失败，第{}次重新请求：".format(url, retry))
+@retry(stop=stop_after_attempt(7), wait=wait_fixed(0.1))
+def get(url: str, method="GET", params: dict = None):
+    if method == "GET":
+        response = requests.request(url=url, method=method, headers=headers(), params=params)
+    else:
+        response = requests.request(url=url, method=method, headers=headers(), data=params)
+    if response.status_code == 200:
+        return response
+    raise print("{}请求失败,code:".format(url, response.status_code))
