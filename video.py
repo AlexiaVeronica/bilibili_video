@@ -1,3 +1,8 @@
+import requests
+
+
+session = requests.Session()
+
 class Video:
     def __init__(self, video_info: dict):
         self.video_bv_id = video_info['bvid']
@@ -7,6 +12,8 @@ class Video:
         self.video_tid = video_info['tid']
         self.video_cid = video_info['cid']
         self.video_desc = video_info['desc']
+        self.download_size = 0
+        self.content_size = 0
 
     def show_video_description(self):
         print('title:', self.video_title)
@@ -16,3 +23,27 @@ class Video:
         print('tid:', self.video_tid)
         print('cid:', self.video_cid)
         print('desc:', self.video_desc)
+
+    def add_progress(self):
+        bar = '%s%.2f%%' % ("■" * int(self.download_size * 50 / self.content_size),
+                            float(self.download_size / self.content_size * 100))
+        print('[下载进度]:', bar, end='\r')
+
+    def download(self, url: str, title: str, params: dict = None):
+        headers = {
+            'referer': 'https://www.bilibili.com',
+            'Accept': 'application/json',
+            'Keep-Alive': 'true',
+            'User-Agent': "Mozilla/5.0 BiliDroid/6.37.1 (bbcallen@gmail.com)",
+        }
+        response = session.get(url, headers=headers, params=params, stream=True)
+        self.content_size = int(response.headers['content-length'])  # 下载文件总大小
+        print('Start download,[File size]:{size:.2f} MB'.format(size=self.content_size / 1024 / 1024))
+        if response.status_code != 200:  # 判断是否响应成功 200为成功
+            print('[请求失败]:', response.status_code)
+            return response.status_code
+        for data in response.iter_content(chunk_size=1024):
+            self.download_size += len(data)
+            self.add_progress()
+            with open(f"{title}.flv", 'ab+') as file:  # 显示进度条
+                file.write(data)

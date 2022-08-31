@@ -11,16 +11,15 @@ def headers():
     }
 
 
-def headers_ffmpeg():
+def headers_ffmpeg(video_url: str, video_title):
     user_agent = "Mozilla/5.0 BiliDroid/6.37.1 (bbcallen@gmail.com)"
-    return f'-user_agent "User-Agent: {user_agent}" -headers "referer: https://www.bilibili.com"'
+    ffmpeg_headers = f'"User-Agent: {user_agent}" -headers "referer: https://www.bilibili.com"'
+    return f'ffmpeg -user_agent {ffmpeg_headers} -i "{video_url}" -c copy "{video_title}" -loglevel quiet'
 
 
-def progress(data: [str], title: str, size: int, content_size: int):
+def add_progress(size: int, content_size: int):
     bar = '%s%.2f%%' % ("■" * int(size * 50 / content_size), float(size / content_size * 100))
     print('[下载进度]:', bar, end='\r')
-    with open(f"{title}.flv", 'ab+') as file:  # 显示进度条
-        file.write(data)
 
 
 def download(url: str, title: str, params: dict = None):
@@ -32,7 +31,9 @@ def download(url: str, title: str, params: dict = None):
         return response.status_code
     for index, data in enumerate(response.iter_content(chunk_size=1024)):
         size += len(data)
-        progress(data, title, size, content_size)
+        add_progress(size, content_size)
+        with open(f"{title}.flv", 'ab+') as file:  # 显示进度条
+            file.write(data)
 
 
 @retry(stop=stop_after_attempt(7), wait=wait_fixed(0.1))

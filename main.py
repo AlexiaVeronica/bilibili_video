@@ -5,8 +5,6 @@ import src
 import video
 from instance import *
 
-from ffmpy3 import FFmpeg
-
 
 def shell_get_bilibili_video(inputs_url: str):
     response = src.APP.View.web_interface_view(api_url=inputs_url)
@@ -18,27 +16,15 @@ def shell_get_bilibili_video(inputs_url: str):
     return True
 
 
-def ffmpeg_path(inputs_path, outputs_path):
-    # print(os.system("python -v"))
-    """
-    :param inputs_path: 输入的文件传入字典格式{文件：操作}
-    :param outputs_path: 输出的文件传入字典格式{文件：操作}
-    :return:
-    """
-    a = FFmpeg(inputs={inputs_path: None}, outputs={outputs_path: '-c copy'})
-    a.run()
-
-
 def shell_download_video():
     response = src.APP.View.play_url_by_cid(
         qn="112", bid=Vars.video_current_info.video_bv_id, cid=Vars.video_current_info.video_cid
     )
     if response.get("code") == 0:
-        video_url_list = [durl['url'] for durl in response.get("data")['durl']][0]
+        video_url = [durl['url'] for durl in response.get("data")['durl']][0]
         video_title = re.sub(r'[？?*|“<>:/]', '', Vars.video_current_info.video_title)
-        src.APP.HttpUtil.download(url=video_url_list, title=video_title)
-        # os.system(f'ffmpeg {src.APP.HttpUtil.headers_ffmpeg()}  -i "{video_url_list}"  -c copy "{video_title + ".flv"}"')
-        # ffmpeg_path(video_url_list, f'{video_title}.flv')
+        Vars.video_current_info.download(url=video_url, title=video_title)
+        # os.system(src.APP.HttpUtil.headers_ffmpeg(video_url, video_title + ".flv"))
     else:
         print("download_video:", response.get("message"))
 
