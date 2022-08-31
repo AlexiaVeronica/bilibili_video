@@ -44,8 +44,8 @@ class Config:
 
 class Vars:
     cfg = Config('Settings - Config.json', os.getcwd())
-    video_current_info = None
-
+    current_info = None
+    current_page_list = []
 
 def str_mid(string: str, left: str, right: str, start=None, end=None):
     pos1 = string.find(left, start, end)
