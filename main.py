@@ -4,6 +4,7 @@ import re
 import src
 import video
 from instance import *
+from rich import print
 
 
 def shell_get_bilibili_video(inputs_url: str):
@@ -20,15 +21,17 @@ def shell_download_video():
     response = src.APP.View.play_url_by_cid(
         qn="112", bid=Vars.video_current_info.video_bv_id, cid=Vars.video_current_info.video_cid
     )
-    if response.get("code") == 0:
-        video_url = [durl['url'] for durl in response.get("data")['durl']][0]
-        video_title = re.sub(r'[？?*|“<>:/]', '', Vars.video_current_info.video_title)
-        Vars.video_current_info.download(url=video_url, title=video_title)
-        # os.system(src.APP.HttpUtil.headers_ffmpeg(video_url, video_title + ".flv"))
-    else:
-        print("download_video:", response.get("message"))
+    video_list = [{"url": i['url'], "size": i['size']} for i in response['data']['durl']]
+    for index, i in enumerate(video_list):
+        if response.get("code") == 0:
+            video_title = re.sub(r'[？?*|“<>:/]', '', Vars.video_current_info.video_title)
+            Vars.video_current_info.download(url=i.get("url"), title=video_title, filesize=i.get("size"))
+            # os.system(src.APP.HttpUtil.headers_ffmpeg(video_url, video_title + ".flv"))
+        else:
+            print("download_video:", response.get("message"))
 
 
+# 多线程下载
 def start_parser():  # start parser for command line arguments and start download process
     parser = argparse.ArgumentParser()  # create parser object for command line arguments
     parser.add_argument(

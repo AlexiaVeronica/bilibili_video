@@ -29,7 +29,8 @@ class Video:
                             float(self.download_size / self.content_size * 100))
         print('[下载进度]:', bar, end='\r')
 
-    def download(self, url: str, title: str, params: dict = None):
+    def download(self, url: str, title: str, filesize:int, params: dict = None):
+        self.content_size = filesize
         headers = {
             'referer': 'https://www.bilibili.com',
             'Accept': 'application/json',
@@ -37,7 +38,6 @@ class Video:
             'User-Agent': "Mozilla/5.0 BiliDroid/6.37.1 (bbcallen@gmail.com)",
         }
         response = session.get(url, headers=headers, params=params, stream=True)
-        self.content_size = int(response.headers['content-length'])  # 下载文件总大小
         print('Start download,[File size]:{size:.2f} MB'.format(size=self.content_size / 1024 / 1024))
         if response.status_code != 200:  # 判断是否响应成功 200为成功
             print('[请求失败]:', response.status_code)
