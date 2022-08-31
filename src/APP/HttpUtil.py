@@ -11,6 +11,11 @@ def headers():
     }
 
 
+def headers_ffmpeg():
+    user_agent = "Mozilla/5.0 BiliDroid/6.37.1 (bbcallen@gmail.com)"
+    return f'-user_agent "User-Agent: {user_agent}" -headers "referer: https://www.bilibili.com"'
+
+
 def progress(data: [str], title: str, size: int, content_size: int):
     bar = '%s%.2f%%' % ("■" * int(size * 50 / content_size), float(size / content_size * 100))
     print('[下载进度]:', bar, end='\r')

@@ -1,6 +1,5 @@
 import re
 from src.APP import HttpUtil, UrlConstant
-from instance import *
 
 
 class View:

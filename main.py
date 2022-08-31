@@ -5,26 +5,42 @@ import src
 import video
 from instance import *
 
+from ffmpy3 import FFmpeg
 
-def shell_download_video(inputs_url: str):
-    start = time.time()  # 下载开始时间 用于计算下载时间
-    Vars.video_info = src.BilibiliAPP.View.web_interface_view(api_url=inputs_url)
-    if isinstance(Vars.video_info, dict) and Vars.video_info.get("code") == 0:
-        Vars.video_info = video.Video(Vars.video_info.get("data"))
-        Vars.video_info.show_video_description()
-        response = src.BilibiliAPP.View.play_url_by_cid(
-            qn="112", bid=Vars.video_info.video_bv_id, cid=Vars.video_info.video_cid
-        )
-        if response.get("code") == 0:
-            video_url = [durl['url'] for durl in response.get("data")['durl']][0]
-            video_title = re.sub(r'[？?*|“<>:/]', '', Vars.video_info.video_title)
-            src.BilibiliAPP.HttpUtil.download(url=video_url, title=video_title)
-        else:
-            print("download_video:", response.get("message"))
 
-        print('Download completed!, time: %.2f 秒' % (time.time() - start))  # output download time
+def shell_get_bilibili_video(inputs_url: str):
+    response = src.APP.View.web_interface_view(api_url=inputs_url)
+    if response.get("code") == 0:
+        Vars.video_current_info = video.Video(response.get("data"))
+        Vars.video_current_info.show_video_description()
     else:
-        print("you input is not a valid bilibili video url")
+        return print("you input is not a valid bilibili video url")
+    return True
+
+
+def ffmpeg_path(inputs_path, outputs_path):
+    # print(os.system("python -v"))
+    """
+    :param inputs_path: 输入的文件传入字典格式{文件：操作}
+    :param outputs_path: 输出的文件传入字典格式{文件：操作}
+    :return:
+    """
+    a = FFmpeg(inputs={inputs_path: None}, outputs={outputs_path: '-c copy'})
+    a.run()
+
+
+def shell_download_video():
+    response = src.APP.View.play_url_by_cid(
+        qn="112", bid=Vars.video_current_info.video_bv_id, cid=Vars.video_current_info.video_cid
+    )
+    if response.get("code") == 0:
+        video_url_list = [durl['url'] for durl in response.get("data")['durl']][0]
+        video_title = re.sub(r'[？?*|“<>:/]', '', Vars.video_current_info.video_title)
+        src.APP.HttpUtil.download(url=video_url_list, title=video_title)
+        # os.system(f'ffmpeg {src.APP.HttpUtil.headers_ffmpeg()}  -i "{video_url_list}"  -c copy "{video_title + ".flv"}"')
+        # ffmpeg_path(video_url_list, f'{video_title}.flv')
+    else:
+        print("download_video:", response.get("message"))
 
 
 def start_parser():  # start parser for command line arguments and start download process
@@ -37,10 +53,13 @@ def start_parser():  # start parser for command line arguments and start downloa
         "-c", "--cookies",
         nargs=1, default=None, help="input cookies to download it"
     )
-    argparse_args = parser.parse_args()
-    if argparse_args.download is not None:
-        shell_download_video(argparse_args.download[0])
+    return parser.parse_args()
 
 
 if __name__ == '__main__':
-    start_parser()
+    argparse_args = start_parser()
+    if argparse_args.download is not None:
+        start = time.time()  # 下载开始时间 用于计算下载时间
+        if shell_get_bilibili_video(argparse_args.download[0]):
+            shell_download_video()
+            print('Download completed!, time: %.2f 秒' % (time.time() - start))  # output download time
