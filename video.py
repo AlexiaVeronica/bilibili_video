@@ -1,4 +1,5 @@
 import requests
+from instance import *
 
 session = requests.Session()
 
@@ -31,6 +32,10 @@ class Video:
         print('cid:', self.video_cid)
         print('desc:', self.video_desc)
 
+    @property
+    def save_path(self):
+        return make_dirs(os.path.join("download", self.video_title))
+
     def add_progress(self):
         bar = '%s%.2f%%' % ("■" * int(self.download_size * 50 / self.content_size),
                             float(self.download_size / self.content_size * 100))
@@ -46,7 +51,7 @@ class Video:
         for data in response.iter_content(chunk_size=1024):
             self.download_size += len(data)
             self.add_progress()
-            with open(f"{title}.flv", 'ab+') as file:  # 显示进度条
+            with open(os.path.join(self.save_path, f"{title}.flv"), 'ab+') as file:  # 显示进度条
                 file.write(data)
         self.download_size = 0
         self.content_size = 0

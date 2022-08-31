@@ -45,6 +45,7 @@ class Config:
 class Vars:
     cfg = Config('Settings - Config.json', os.getcwd())
     current_info = None
+    current_path = None
     current_page_list = []
 
 def str_mid(string: str, left: str, right: str, start=None, end=None):
@@ -73,3 +74,4 @@ def mkdir(path: str):
 def make_dirs(path: str):
     if not os.path.exists(path):
         os.makedirs(path)
+    return path

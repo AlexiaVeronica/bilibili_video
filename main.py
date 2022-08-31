@@ -14,6 +14,7 @@ def shell_get_bilibili_video(bilili_bv: str):
     if response.get("code") == 0:
         Vars.current_info = video.Video(response.get("data"))
         Vars.current_info.show_video_description()
+
     else:
         return print("get_bilibili_video:", response.get("message"))
     return True
