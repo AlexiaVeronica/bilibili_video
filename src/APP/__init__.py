@@ -3,24 +3,29 @@ from src.APP import HttpUtil, UrlConstant
 
 
 class View:
-    @staticmethod
-    def input_bili_id(bili_id: str) -> str:
-        bili_id = re.findall("video/(\\w+)/?", bili_id)[0] if 'http' in bili_id else bili_id
-        if bili_id.find('av') != -1 or bili_id.isdigit() is True:
-            return UrlConstant.AID_INFO_API.format(re.sub(r"av", "", bili_id))
-        elif bili_id.find("BV") != -1:
-            return UrlConstant.AID_INFO_API.format(Transformation().AV(bili_id))
 
     @staticmethod
-    def web_interface_view(api_url: str) -> dict:
-        web_interface_view_url = View.input_bili_id(api_url)
-        if web_interface_view_url != "":
-            return HttpUtil.get(web_interface_view_url).json()
+    def web_interface_view(bilili_bv: str) -> dict:
+        return HttpUtil.get(UrlConstant.AID_INFO_API, params={"bvid": bilili_bv}).json()
 
     @staticmethod
-    def play_url_by_cid(bid: str, cid: str, qn: str) -> dict:  # get video play video url
+    def get_play_list(bilili_bv: str):
+        return HttpUtil.get(UrlConstant.APP_INFO_API, params={"bvid": bilili_bv}).json()
+
+    @staticmethod
+    def play_url_by_cid(bid: str, cid: str, qn: str = "112") -> dict:  # get video play video url
         params = {'bvid': bid, 'qn': qn, 'cid': cid, 'fnval': '0', 'fnver': '0', 'fourk': '1'}
         return HttpUtil.get(UrlConstant.VIDEO_API, params=params).json()
+
+    # @staticmethod
+    # def web_interface_view(api_url: str) -> dict:
+    #     bili_id = re.findall("video/(\\w+)/?", api_url)[0] if 'http' in api_url else api_url
+    #     if bili_id.find('av') != -1 or bili_id.isdigit() is True:
+    #         return HttpUtil.get(UrlConstant.AID_INFO_API, params={"aid": re.sub(r"av", "", bili_id)}).json()
+    #     elif bili_id.find("BV") != -1:
+    #         return HttpUtil.get(UrlConstant.AID_INFO_API, params={"aid": Transformation.AV(bili_id)}).json()
+    #     else:
+    #         print("you input is not a valid bilibili video url")
 
 
 class Transformation:
